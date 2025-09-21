@@ -15,7 +15,10 @@ use App\Http\Controllers\ProductController;
 |
 */
 
-Route::resource('products', ProductController::class);
+// Proteced routes
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    Route::resource('products', ProductController::class);
+});
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
