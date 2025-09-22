@@ -31,7 +31,7 @@ class AuthController extends Controller
         ]);
 
         // Create token
-        $token = $user->createToken('my-device')->plainTextToken;
+        $token = $user->createToken($request->userAgent(), ["$user->role"])->plainTextToken;
 
         $response = [
             'user' => $user,
@@ -39,5 +39,46 @@ class AuthController extends Controller
         ];
 
         return response($response, 201);
+
+    }
+
+    // Login
+    public function login(Request $request){
+        // Validate field
+        $fields = $request->validate([
+            "email" => "required|string",
+            "password" => "required|string",
+        ]);
+
+        // Create
+        $user = User::where("email", $fields["email"])->first();
+        
+        //Check password
+        if(!$user || Hash::check($fields['password'], $user->password)){
+            return response([
+                'message' => 'Invalid Login'
+            ]);
+        }else{
+            // ลบ Token เก่าออกก่อนค่อยสร้างใหม่
+            $user -> tokens()->delete();
+
+            // Create token
+             $token = $user->createToken($request->userAgent(), ["$user->role"])->plainTextToken;
+    
+            $response = [
+                'user' => $user,
+                'token' => $token
+            ];
+    
+            return response($response, 201);
+        }
+    }
+
+    // Logout
+    public function logout(Request $request){
+        auth()->user()->tokens()->delete();
+        return [
+            'message' => "Logouted"
+        ];
     }
 }

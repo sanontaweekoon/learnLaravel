@@ -25,13 +25,21 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|min:5',
-            'slug' => 'required|',
-            'price'=> 'required|'
-        ]);
+        // เช็คสิทธิ์ (role) ว่าเป็น admin (1)
+        $user = auth()->user();
 
-        return Product::create($request->all());
+        if ($user->tokenCan("1")) {
+            $request->validate([
+                'name' => 'required|min:5',
+                'slug' => 'required|',
+                'price' => 'required|'
+            ]);
+            return Product::create($request->all());
+        } else {
+            return [
+                'status' => 'Pemision denied to create'
+            ];
+        }
     }
 
     /**
@@ -68,7 +76,17 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
+        // เช็คสิทธิ์ (role) ว่าเป็น admin(1)
+        $user = auth()->user();
+
         return Product::destroy($id);
 
+        if ($user->tokenCan("1")) {
+            return Product::destroy($id);
+        } else {
+            return [
+                'status' => 'Pemision denied to delete'
+            ];
+        }
     }
 }
