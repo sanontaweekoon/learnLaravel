@@ -18,10 +18,8 @@ use App\Http\Controllers\AuthController;
 
 // Public route
 Route::post('register', [AuthController::class, 'register']);
-
 // Login
 Route::post('login', [AuthController::class, 'login']);
-
 
 // Proteced routes
 Route::group(['middleware' => 'auth:sanctum'], function () {

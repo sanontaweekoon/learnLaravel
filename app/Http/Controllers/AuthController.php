@@ -47,17 +47,17 @@ class AuthController extends Controller
         // Validate field
         $fields = $request->validate([
             "email" => "required|string",
-            "password" => "required|string",
+            "password" => "required|string"
         ]);
 
         // Create
         $user = User::where("email", $fields["email"])->first();
         
         //Check password
-        if(!$user || Hash::check($fields['password'], $user->password)){
+        if(!$user || !Hash::check($fields['password'], $user->password)){
             return response([
                 'message' => 'Invalid Login'
-            ]);
+            ], 401);
         }else{
             // ลบ Token เก่าออกก่อนค่อยสร้างใหม่
             $user -> tokens()->delete();
