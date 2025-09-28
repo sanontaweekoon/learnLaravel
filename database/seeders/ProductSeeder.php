@@ -25,7 +25,7 @@ class ProductSeeder extends Seeder
                 'slug' => 'Samsung-Gaxaly-S25-Ultra',
                 'description' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maiores accusamus voluptates praesentium sequi iusto! Porro voluptates at nulla deserunt error est, sint fuga autem recusandae, corporis totam libero fugiat quaerat?',
                 'price' => 39990.00,
-                'image' => 'https://avatars.githubusercontent.com/u/97165286?text=samsung',
+                'image' => 'https://picsum.photos/seed/samsung-galaxy/800/800',
                 'user_id' => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

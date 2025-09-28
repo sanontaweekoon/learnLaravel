@@ -18,7 +18,7 @@ class ProductFactory extends Factory
             'slug' => $this->faker->slug(2, false),
             'description' => $this->faker->text(),
             'price' => $this->faker->randomFloat(2, 100, 10000),
-            'image' => $this->faker->imageUrl(800, 800),
+            'image' => 'https://picsum.photos/seed/' . $this->faker->uuid . '/800/800',
             'user_id' => $this->faker->randomNumber(1, 99)
         ];
     }
