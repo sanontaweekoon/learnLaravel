@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class ProductController extends Controller
 {
@@ -37,7 +39,52 @@ class ProductController extends Controller
                 'slug' => 'required|',
                 'price' => 'required|'
             ]);
-            return Product::create($request->all());
+
+            // กำหนดตัวแปรรับค่าจากฟอร์ม
+            $data_product = array(
+                'name' => $request->input('name'),
+                'slug' => $request->input('slug'),
+                'description' => $request->input('description'),
+                'price' => $request->input('price'),
+                'user_id' => $user->id,
+                
+            );
+            // รับไฟล์ภาพเข้ามา
+            $image = $request->file('file');
+
+            // เช็คว่าผู้ใช้มีการอัพโหลดภาพเข้ามาหรือไม่
+            if(!empty($image)){
+                
+                // อัพโหลดรูปภาพ
+                // เปลี่ยนชื่อรูปที่ได้
+                $file_name = "product_".time().".".$image->getClientOriginalExtension();
+
+                // กำหนดขนาดความกว้าง และ สูง ของภาพที่ต้องการย่อขนาด
+                $imgWidth  = 400;
+                $imgHeight = 400;
+                $folderupload = public_path('/images/products/thumbnail');
+                $path = $folderupload."/".$file_name;
+
+                // อัพโหลดเข้าสู่ folder thumbnail
+                $img = Image::make($image->getRealPath());
+                $img->orientate()->fit($imgWidth, $imgHeight, function($constraint){
+                    $constraint->upsize();
+                });
+                $img->save($path);
+
+                // อัพโหลดภาพต้นฉบับเข้า folder original
+                $destinationPath = public_path('/images/products/original');
+                $image->move($destinationPath, $file_name);
+
+                // กำหนด path เพื่อนำรูปมาใส่ในตารางฐานข้อมูล
+                $data_product['image'] = url('/').'/images/products/thumbnail/'.$file_name;
+            }else{
+                $data_product['image'] = url('/').'/images/products/thumbnail/no_img.jpg';
+            }
+
+            return response($data_product, 201);
+            //return response($request->all(), 201);
+            //return Product::create($request->all());
         } else {
             return [
                 'status' => 'Pemision denied to create'
